@@ -123,7 +123,7 @@ def upload_backup_files_to_s3(backup_files, s3_client, bucket, prefix):
 
 def remove_backup_files(backup_files):
     for file in backup_files:
-        os.remove(file)
+        Path(file).remove()
         print('Removed file {}'.format(file))
 
 
