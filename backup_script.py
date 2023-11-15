@@ -66,7 +66,7 @@ def create_backup_directory(backup_folder):
 
 
 def get_volume_backup_file_name(volume):
-    return f'{datetime.now().date()}-{volume.name}.tar.gz'
+    return '{}-{}.tar.gz'.format(datetime.now().date(), volume.name)
 
 
 def export(docker_client, volumes, backup_folder):
@@ -75,9 +75,12 @@ def export(docker_client, volumes, backup_folder):
 
     for volume in volumes:
         backup_file_name = get_volume_backup_file_name(volume)
-        backup_file_path = f'{backup_folder}/{backup_file_name}'
+        backup_file_path = '{}/{}'.format(backup_folder, backup_file_name)
 
-        print(f'[{datetime.now()}] exporting {volume.name} to {backup_file_path}')
+        print('[{}] exporting {} to {}'.format(
+            datetime.now(),
+            volume.name,
+            backup_file_path))
         export_volume(docker_client, volume.name,
                       backup_file_name, backup_folder)
 
@@ -91,7 +94,8 @@ def export_volume(docker_client, volume_name, backup_file_name, backup_folder):
     absolute_path = Path(backup_folder).absolute()
     # try:
     docker_client.containers.run("busybox:1.36.1",
-                                 f"tar -zcvf /vackup/{backup_file_name} /vackup-volume",
+                                 "tar -zcvf /vackup/{} /vackup-volume".format(
+                                     backup_file_name),
                                  remove=True,
                                  volumes={
                                      volume_name: {'bind': '/vackup-volume', 'mode': 'rw'},
@@ -108,7 +112,7 @@ def get_upload_path(file_path, prefix):
     file_name = Path(file_path).name
     if prefix:
         prefix = prefix.rstrip('/')
-        return f'{prefix}/{file_name}'
+        return '{}/{}'.format(prefix, file_name)
     else:
         return file_name
 
@@ -118,13 +122,13 @@ def upload_backup_files_to_s3(backup_files, s3_client, bucket, prefix):
         upload_path = get_upload_path(backup_file, prefix)
         s3_client.upload_file(
             backup_file, bucket, upload_path)
-        print(f'File {backup_file} uploaded successfully')
+        print('File {} uploaded successfully'.format(backup_file))
 
 
 def remove_backup_files(backup_files):
     for file in backup_files:
         os.remove(file)
-        print(f'Removed file {file}')
+        print('Removed file {}'.format(file))
 
 
 if __name__ == "__main__":
@@ -139,7 +143,7 @@ if __name__ == "__main__":
     s3_client = connect_to_s3(
         args.s3_endpoint, args.access_key, args.secret_key)
     volumes = get_sentry_volumes(docker_client)
-    print(f"Exporting sentry volumes")
+    print("Exporting sentry volumes")
     backup_files = export(docker_client, volumes, backup_folder)
     if args.s3_endpoint[0]:
         print(args.access_key)
@@ -149,11 +153,11 @@ if __name__ == "__main__":
         if not args.secret_key:
             print('Aborting upload. No secret key given')
             exit(1)
-        print(f"Uploading backup files to s3")
+        print("Uploading backup files to s3")
         try:
             upload_backup_files_to_s3(
                 backup_files, s3_client, args.bucket, args.prefix)
         finally:
             if args.remove_files:
-                print(f'Removing local backup files')
+                print('Removing local backup files')
                 remove_backup_files(backup_files)
