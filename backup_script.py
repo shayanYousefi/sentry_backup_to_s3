@@ -79,8 +79,7 @@ def export(docker_client, volumes, backup_folder):
         backup_file_name = get_volume_backup_file_name(volume)
         backup_file_path = '{}/{}'.format(backup_folder, backup_file_name)
 
-        print('[{}] exporting {} to {}'.format(
-            datetime.now(),
+        print('exporting {} to {}'.format(
             volume.name,
             backup_file_path))
         export_volume(docker_client, volume.name,
@@ -91,10 +90,7 @@ def export(docker_client, volumes, backup_folder):
 
 
 def export_volume(docker_client, volume_name, backup_file_name, backup_folder):
-    # run(['./vackup', 'export', volume.name, dest_file_path], check=True,
-    #     stdout=PIPE, text=True);
     absolute_path = Path(backup_folder).absolute()
-    # try:
     docker_client.containers.run("busybox:1.36.1",
                                  "tar -zcvf /vackup/{} /vackup-volume".format(
                                      backup_file_name),
@@ -104,8 +100,6 @@ def export_volume(docker_client, volume_name, backup_file_name, backup_folder):
                                      absolute_path: {'bind': '/vackup', 'mode': 'rw'},
                                  },
                                  )
-    # except docker.errors.ContainerError as error:
-    #     print(error)
 
     return backup_file_name
 
