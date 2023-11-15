@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from subprocess import run, PIPE
 from datetime import datetime
 from pathlib import Path
 import docker
