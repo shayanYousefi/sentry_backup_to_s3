@@ -34,6 +34,10 @@ def define_arguments(parser):
                         help='remove files after upload',
                         action=argparse.BooleanOptionalAction,
                         default=False)
+    parser.add_argument('--backup-folder',
+                        help='backup file location',
+                        nargs=1,
+                        default='./backup')
 
 
 def connect_to_docker_engine():
@@ -136,7 +140,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Sentry backup script')
     define_arguments(parser)
     args = parser.parse_args()
-    backup_folder = "./backup"
+    backup_folder = args.backup_folder
     create_backup_directory(backup_folder)
     docker_client = connect_to_docker_engine()
     s3_client = connect_to_s3(
