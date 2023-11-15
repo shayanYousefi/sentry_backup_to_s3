@@ -64,8 +64,7 @@ def get_sentry_volumes(client):
 
 
 def create_backup_directory(backup_folder):
-    if not Path.is_dir(backup_folder):
-        Path.mkdir(backup_folder)
+    Path(backup_folder).mkdir(exist_ok=True)
 
 
 def get_volume_backup_file_name(volume):
