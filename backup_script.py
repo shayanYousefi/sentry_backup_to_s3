@@ -13,29 +13,29 @@ def define_arguments(parser):
     parser.add_argument('--s3-endpoint',
                         help='Endpoint to store backup file',
                         nargs=1,
-                        default=getenv('S3_ENDPOINT'))
+                        default=getenv('S3_ENDPOINT', ''))
     parser.add_argument('-u', '--access-key',
                         help='Access key for s3',
                         nargs=1,
-                        default=getenv('S3_ACCESS_KEY'))
+                        default=getenv('S3_ACCESS_KEY', ''))
     parser.add_argument('-p', '--secret-key',
                         help='Secret key for s3',
                         nargs=1,
-                        default=getenv('S3_SECRET_KEY'))
+                        default=getenv('S3_SECRET_KEY', ''))
     parser.add_argument('--bucket',
-                        help='bucket of s3',
+                        help='Bucket of s3',
                         nargs=1,
-                        default=getenv('S3_BUCKET'))
+                        default=getenv('S3_BUCKET', ''))
     parser.add_argument('--prefix',
-                        help='bucket of s3',
+                        help='Prefix to add to upload path',
                         nargs=1,
                         default=getenv('S3_PATH_PREFIX', ''))
     parser.add_argument('-r', '--remove_files',
-                        help='remove files after upload',
+                        help='Remove files after upload',
                         action=BooleanOptionalAction,
                         default=False)
     parser.add_argument('--backup-folder',
-                        help='backup file location',
+                        help='Local backup file location',
                         nargs=1,
                         default='./backup')
 
