@@ -28,11 +28,10 @@ def define_arguments(parser):
     parser.add_argument('-r', '--remove-files',
                         help='Remove files after upload',
                         action=BooleanOptionalAction,
-                        default=False)
+                        default=getenv('REMOVE_FILES', 'false'))
     parser.add_argument('--backup-folder',
                         help='Local backup file location',
-                        nargs=1,
-                        default='./backup')
+                        default=getenv('BACKUP_FOLDER', './backup'))
 
 
 def connect_to_docker_engine():
