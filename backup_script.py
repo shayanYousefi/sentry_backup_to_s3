@@ -139,13 +139,15 @@ if __name__ == "__main__":
     
     backup_folder = args.backup_folder
     create_backup_directory(backup_folder)
+
     docker_client = connect_to_docker_engine()
     s3_client = connect_to_s3(
         args.s3_endpoint, args.access_key, args.secret_key)
+
     volumes = get_sentry_volumes(docker_client)
     print("Exporting sentry volumes")
     backup_files = export(docker_client, volumes, backup_folder)
-    if args.s3_endpoint[0]:
+    if args.s3_endpoint:
         print(args.access_key)
         if not args.access_key:
             print('Aborting upload. No access key given')
