@@ -22,7 +22,7 @@ def define_arguments(parser):
     parser.add_argument('-b', '--bucket',
                         help='Bucket of s3',
                         default=getenv('S3_BUCKET', ''))
-    parser.add_argument('--prefix',
+    parser.add_argument('-a', '--prefix',
                         help='Prefix to add to upload path',
                         default=getenv('S3_PATH_PREFIX', ''))
     parser.add_argument('-r', '--remove-files',
@@ -136,7 +136,7 @@ if __name__ == "__main__":
     define_arguments(parser)
     args = parser.parse_args()
     args.remove_files = convert_to_boolean(args.remove_files)
-    
+
     backup_folder = args.backup_folder
     create_backup_directory(backup_folder)
 
