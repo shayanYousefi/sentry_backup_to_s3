@@ -121,12 +121,22 @@ def remove_backup_files(backup_files):
         print('Removed file {}'.format(file))
 
 
+def convert_to_boolean(str):
+    str = str.lower().strip()
+    if str == "true":
+        return True
+    else:
+        return False
+
+
 if __name__ == "__main__":
 
     load_dotenv()
     parser = ArgumentParser(description='Sentry backup script')
     define_arguments(parser)
     args = parser.parse_args()
+    args.remove_files = convert_to_boolean(args.remove_files)
+    
     backup_folder = args.backup_folder
     create_backup_directory(backup_folder)
     docker_client = connect_to_docker_engine()
