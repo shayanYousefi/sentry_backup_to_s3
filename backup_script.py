@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
-import boto3
-import docker
 from os import getenv
 from pathlib import Path
-from datetime import datetime
 from dotenv import load_dotenv
 from argparse import BooleanOptionalAction, ArgumentParser
+from utility import create_backup_directory, get_volume_backup_file_name, connect_to_s3, connect_to_docker_engine, get_upload_path, remove_backup_files, convert_to_boolean
 
 
 def define_arguments(parser):
@@ -34,19 +32,6 @@ def define_arguments(parser):
                         default=getenv('BACKUP_FOLDER', './backup'))
 
 
-def connect_to_docker_engine():
-    client = docker.from_env()
-    return client
-
-
-def connect_to_s3(endpoint, access_key, secret_key):
-
-    s3_client = boto3.client('s3', endpoint_url=endpoint,
-                             aws_secret_access_key=secret_key,
-                             aws_access_key_id=access_key)
-    return s3_client
-
-
 def get_sentry_volumes(client):
 
     volumes = client.volumes.list()
@@ -57,15 +42,7 @@ def get_sentry_volumes(client):
     return sentry_volumes
 
 
-def create_backup_directory(backup_folder):
-    Path(backup_folder).mkdir(exist_ok=True)
-
-
-def get_volume_backup_file_name(volume):
-    return '{}-{}.tar.gz'.format(datetime.now().date(), volume.name)
-
-
-def export(docker_client, volumes, backup_folder):
+def export_volumes(docker_client, volumes, backup_folder):
 
     backup_files = []
 
@@ -86,25 +63,16 @@ def export(docker_client, volumes, backup_folder):
 def export_volume(docker_client, volume_name, backup_file_name, backup_folder):
     absolute_path = Path(backup_folder).absolute()
     docker_client.containers.run("busybox:1.36.1",
-                                 "tar -zcvf /vackup/{} /vackup-volume".format(
+                                 "tar -zcvf /backup/{} /backup-volume".format(
                                      backup_file_name),
                                  remove=True,
                                  volumes={
-                                     volume_name: {'bind': '/vackup-volume', 'mode': 'rw'},
-                                     absolute_path: {'bind': '/vackup', 'mode': 'rw'},
+                                     volume_name: {'bind': '/backup-volume', 'mode': 'rw'},
+                                     absolute_path: {'bind': '/backup', 'mode': 'rw'},
                                  },
                                  )
 
     return backup_file_name
-
-
-def get_upload_path(file_path, prefix):
-    file_name = Path(file_path).name
-    if prefix:
-        prefix = prefix.rstrip('/')
-        return '{}/{}'.format(prefix, file_name)
-    else:
-        return file_name
 
 
 def upload_backup_files_to_s3(backup_files, s3_client, bucket, prefix):
@@ -113,20 +81,6 @@ def upload_backup_files_to_s3(backup_files, s3_client, bucket, prefix):
         s3_client.upload_file(
             backup_file, bucket, upload_path)
         print('File {} uploaded successfully'.format(backup_file))
-
-
-def remove_backup_files(backup_files):
-    for file in backup_files:
-        Path(file).remove()
-        print('Removed file {}'.format(file))
-
-
-def convert_to_boolean(str):
-    str = str.lower().strip()
-    if str == "true":
-        return True
-    else:
-        return False
 
 
 if __name__ == "__main__":
@@ -144,9 +98,8 @@ if __name__ == "__main__":
 
     volumes = get_sentry_volumes(docker_client)
     print("Exporting sentry volumes")
-    backup_files = export(docker_client, volumes, backup_folder)
+    backup_files = export_volumes(docker_client, volumes, backup_folder)
     if args.s3_endpoint:
-        print(args.access_key)
         if not args.access_key:
             print('Aborting upload. No access key given')
             exit(1)
