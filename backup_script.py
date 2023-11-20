@@ -141,8 +141,6 @@ if __name__ == "__main__":
     create_backup_directory(backup_folder)
 
     docker_client = connect_to_docker_engine()
-    s3_client = connect_to_s3(
-        args.s3_endpoint, args.access_key, args.secret_key)
 
     volumes = get_sentry_volumes(docker_client)
     print("Exporting sentry volumes")
@@ -157,6 +155,9 @@ if __name__ == "__main__":
             exit(1)
         print("Uploading backup files to s3")
         try:
+
+            s3_client = connect_to_s3(
+                args.s3_endpoint, args.access_key, args.secret_key)
             upload_backup_files_to_s3(
                 backup_files, s3_client, args.bucket, args.prefix)
         finally:
