@@ -121,34 +121,29 @@ if __name__ == "__main__":
 
     docker_client = utility.connect_to_docker_engine()
 
-    try:
-
-        if args.s3_endpoint:
-            if not args.access_key:
-                print('Aborting upload. No access key given')
-                exit(1)
-            if not args.secret_key:
-                print('Aborting upload. No secret key given')
-                exit(1)
-            print("Downloading backup files to s3")
-
-            s3_client = utility.connect_to_s3(
-                args.s3_endpoint, args.access_key, args.secret_key)
-
-            file_names = get_remote_backup_file_list(
-                s3_client, args.bucket, args.prefix, args.datetime)
-            download_backup_files(
-                s3_client, args.bucket, args.prefix, file_names, args.backup_folder)
-        else:
-            file_names = get_local_backup_file_list(
-                backup_folder, args.datetime)
-        print("Importing sentry volumes")
-        if len(file_names) < 1:
-            print('No file found to restore. Aborting restore.')
+    if args.s3_endpoint:
+        if not args.access_key:
+            print('Aborting upload. No access key given')
             exit(1)
-        import_volumes(docker_client, file_names, backup_folder)
-    finally:
-        if args.remove_files:
-            print('Removing local backup files')
-            utility.remove_backup_files(
-                list(map(lambda file_name: "{}/{}".format(backup_folder, file_name), file_names)))
+        if not args.secret_key:
+            print('Aborting upload. No secret key given')
+            exit(1)
+        print("Downloading backup files to s3")
+        s3_client = utility.connect_to_s3(
+            args.s3_endpoint, args.access_key, args.secret_key)
+        file_names = get_remote_backup_file_list(
+            s3_client, args.bucket, args.prefix, args.datetime)
+        download_backup_files(
+            s3_client, args.bucket, args.prefix, file_names, args.backup_folder)
+    else:
+        file_names = get_local_backup_file_list(
+            backup_folder, args.datetime)
+    print("Importing sentry volumes")
+    if len(file_names) < 1:
+        print('No file found to restore. Aborting restore.')
+        exit(1)
+    import_volumes(docker_client, file_names, backup_folder)
+    if args.remove_files:
+        print('Removing local backup files')
+        utility.remove_backup_files(
+            list(map(lambda file_name: "{}/{}".format(backup_folder, file_name), file_names)))
