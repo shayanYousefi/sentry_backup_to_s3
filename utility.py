@@ -52,7 +52,7 @@ def get_upload_path(file_path, prefix):
 
 def remove_backup_files(backup_files):
     for file in backup_files:
-        Path(file).unlink()
+        Path(file).unlink(missing_ok=True)
         print('Removed file {}'.format(file))
 
 
