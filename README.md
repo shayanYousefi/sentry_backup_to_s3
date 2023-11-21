@@ -26,7 +26,7 @@ S3_BUCKET | --bucket | -b | Bucket of s3
 S3_PATH_PREFIX | --prefix | -a | Prefix to add to upload path
 S3_ENDPOINT | --s3-endpoint | -e | Endpoint to use for s3. __*Note*__: if not provided volume backup are only compressed in backup folder and other s3 args are ignored
 BACKUP_FOLDER | --backup-folder | Local backup file location
-REMOVE_FILES | --remove-files | -r | Whether to remove local files after upload or not. __*Note*__: for `backup_script.py`, ignored if s3 endpoint is not defined. default: `False`
+REMOVE_FILES | --remove-files | -r | Whether to remove local files after upload or not. __*Note*__: only used for `backup_script.py`. Ignored if s3 endpoint is not defined. default: `False`
 
 `restore_script.py` accepts the same argument with these additions:
 

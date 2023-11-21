@@ -142,7 +142,3 @@ if __name__ == "__main__":
         print('No file found to restore. Aborting restore.')
         exit(1)
     import_volumes(docker_client, file_names, backup_folder)
-    if args.remove_files:
-        print('Removing local backup files')
-        utility.remove_backup_files(
-            list(map(lambda file_name: "{}/{}".format(backup_folder, file_name), file_names)))
