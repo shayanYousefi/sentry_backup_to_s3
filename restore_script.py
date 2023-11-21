@@ -5,7 +5,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 from argparse import BooleanOptionalAction, ArgumentParser
 import utility
-import pprint
 import docker
 
 
