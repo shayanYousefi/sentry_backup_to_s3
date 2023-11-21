@@ -45,16 +45,16 @@ def download_from_s3(s3_client, bucket, prefix, file_name, backup_folder):
 
 
 def download_backup_files(s3_client, bucket, prefix, file_names, backup_folder):
-    file_names = []
+    downloaded_file = []
     for file_name in file_names:
         print('Downloading {}'.format(file_name))
         download_from_s3(
             s3_client, bucket, prefix, file_name, backup_folder)
-        file_names.append(file_name)
-    return file_names
+        downloaded_file.append(file_name)
+    return downloaded_file
 
 
-def import_volumes(docker_client, prefix, file_names, backup_folder):
+def import_volumes(docker_client, file_names, backup_folder):
 
     for file_name in file_names:
         print('Importing {}'.format(file_name))
@@ -68,7 +68,7 @@ def import_volume(docker_client, file_name, backup_folder):
     try:
         volume = docker_client.volumes.get(volume_name)
         volume.remove()
-    except docker.errors.NotFound as err:
+    except docker.errors.NotFound:
         pass
     docker_client.volumes.create(volume_name)
     docker_client.containers.run('busybox:1.36.1',
@@ -144,11 +144,11 @@ if __name__ == "__main__":
                 backup_folder, args.datetime)
         print("Importing sentry volumes")
         if len(file_names) < 1:
-            print('No file found for restoring')
+            print('No file found to restore. Aborting restore.')
             exit(1)
-        import_volumes(docker_client, args.prefix, file_names, backup_folder)
+        import_volumes(docker_client, file_names, backup_folder)
     finally:
         if args.remove_files:
             print('Removing local backup files')
             utility.remove_backup_files(
-                "{}/{}".format(backup_folder, file_names))
+                list(map(lambda file_name: "{}/{}".format(backup_folder, file_name), file_names)))
