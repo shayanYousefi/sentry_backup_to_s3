@@ -9,7 +9,7 @@ from utility import create_backup_directory, get_volume_backup_file_name, connec
 
 def define_arguments(parser):
     parser.add_argument('-e', '--s3-endpoint',
-                        help='Endpoint to store backup file',
+                        help='Endpoint to use for s3. __*Note*__: if not provided volume backup in backup folder is used and other s3 args are ignored',
                         default=getenv('S3_ENDPOINT', ''))
     parser.add_argument('-u', '--access-key',
                         help='Access key for s3',
@@ -21,10 +21,10 @@ def define_arguments(parser):
                         help='Bucket of s3',
                         default=getenv('S3_BUCKET', ''))
     parser.add_argument('-a', '--prefix',
-                        help='Prefix to add to upload path',
+                        help='Prefix to add to remote file path',
                         default=getenv('S3_PATH_PREFIX', ''))
     parser.add_argument('-r', '--remove-files',
-                        help='Remove files after upload',
+                        help='Whether to remove local files after backup is done. ignored if s3 endpoint is not defined',
                         action=BooleanOptionalAction,
                         default=getenv('REMOVE_FILES', 'false'))
     parser.add_argument('--backup-folder',

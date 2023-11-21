@@ -12,10 +12,10 @@ import docker
 def define_arguments(parser):
     parser.add_argument('-d', '--datetime',
                         required=True,
-                        help='What datetime to restore. format: {}'.format(
-                            utility.TIME_FORMAT))
+                        help='What datetime to restore. format: 2023-02-03T10:01:05'
+                        )
     parser.add_argument('-e', '--s3-endpoint',
-                        help='Endpoint to store backup file',
+                        help='Endpoint for s3',
                         default=getenv('S3_ENDPOINT', ''))
     parser.add_argument('-u', '--access-key',
                         help='Access key for s3',
@@ -30,7 +30,7 @@ def define_arguments(parser):
                         help='Prefix to add to upload path',
                         default=getenv('S3_PATH_PREFIX', ''))
     parser.add_argument('-r', '--remove-files',
-                        help='Remove files after upload',
+                        help='Whether to remove local files after script is done',
                         action=BooleanOptionalAction,
                         default=getenv('REMOVE_FILES', 'false'))
     parser.add_argument('--backup-folder',
