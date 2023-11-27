@@ -18,18 +18,13 @@ This script uses docker UNIX socket for backing up sentry volumes and uploads th
 
 Arguments can be given to script or can be put on .env file. Script arguments have more Priority than envs.
 
-Env | Argument | Alias | Description
------|--------|------| ----------
-S3_ACCESS_KEY | --access-key | -u | Access key for s3
-S3_SECRET_KEY | --secret-key | -p | Secret key for s3
-S3_BUCKET | --bucket | -b | Bucket of s3
-S3_PATH_PREFIX | --prefix | -a | Prefix to add to upload path
-S3_ENDPOINT | --s3-endpoint | -e | Endpoint to use for s3. __*Note*__: if not provided volume backup are only compressed in backup folder and other s3 args are ignored
-BACKUP_FOLDER | --backup-folder | Local backup file location
-REMOVE_FILES | --remove-files | -r | Whether to remove local files after upload or not. __*Note*__: only used for `backup_script.py`. Ignored if s3 endpoint is not defined. default: `False`
-
-`restore_script.py` accepts the same argument with these additions:
-
-Env | Argument | Alias | Description
------|--------|------| ----------
- _ | --datetime | -d | What datetime to restore. format: '%Y-%m-%dT%H:%M:%S'. example: '2023-02-03T10:01:05'
+Used in Backup | Used in Restore | Env | Argument | Alias | Description
+---- | ---- | ----|--------|------| ----------
+&check; | &check; | S3_ACCESS_KEY | --access-key | -u | Access key for s3
+&check; | &check;  | S3_SECRET_KEY | --secret-key | -p | Secret key for s3
+&check; | &check;  | S3_BUCKET | --bucket | -b | Bucket of s3
+&check; | &check;  | S3_PATH_PREFIX | --prefix | -a | Prefix to add to upload path
+&check; | &check;  | S3_ENDPOINT | --s3-endpoint | -e | Endpoint to use for s3. __*Note*__: if not provided volume backup are only compressed in backup folder and other s3 args are ignored
+&check; | &check;  | BACKUP_FOLDER | --backup-folder | Local backup file location
+&check; | &cross;  |  _ | --remove-files | -r | Whether to remove local files after upload or not. Ignored if s3 endpoint is not defined. default: `False`
+&cross; | &check;  | _ | --datetime | -d | What datetime to restore. format: '%Y-%m-%dT%H:%M:%S'. example: '2023-02-03T10:01:05'
