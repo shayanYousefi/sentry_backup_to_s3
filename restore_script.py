@@ -29,9 +29,9 @@ def define_arguments(parser):
                         help='Prefix to add to upload path',
                         default=getenv('S3_PATH_PREFIX', ''))
     parser.add_argument('-r', '--remove-files',
+                        action="store_true",
                         help='Whether to remove local files after script is done',
-                        action=BooleanOptionalAction,
-                        default=getenv('REMOVE_FILES', 'false'))
+                        default=False)
     parser.add_argument('--backup-folder',
                         help='Local backup file location',
                         default=getenv('BACKUP_FOLDER', './backup'))
@@ -112,7 +112,6 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Sentry backup script')
     define_arguments(parser)
     args = parser.parse_args()
-    args.remove_files = utility.convert_to_boolean(args.remove_files)
     args.datetime = utility.convert_to_date(args.datetime)
 
     backup_folder = args.backup_folder
