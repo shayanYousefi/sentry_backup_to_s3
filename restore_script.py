@@ -3,7 +3,7 @@
 from os import getenv
 from pathlib import Path
 from dotenv import load_dotenv
-from argparse import BooleanOptionalAction, ArgumentParser
+from argparse import ArgumentParser
 import utility
 import docker
 

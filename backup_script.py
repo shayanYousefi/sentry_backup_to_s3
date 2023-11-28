@@ -3,7 +3,7 @@
 from os import getenv
 from pathlib import Path
 from dotenv import load_dotenv
-from argparse import BooleanOptionalAction, ArgumentParser
+from argparse import ArgumentParser
 from utility import create_backup_directory, get_volume_backup_file_name, connect_to_s3, connect_to_docker_engine, get_upload_path, remove_backup_files, convert_to_boolean
 
 
